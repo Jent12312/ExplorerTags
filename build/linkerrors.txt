@@ -1,0 +1,11 @@
+================================================================================
+Linker Errors
+Generated: 2026-08-02T17:31:38.118Z
+Total Errors: 2
+================================================================================
+
+[LNK2019] (MSVC)
+ссылка на неразрешенный внешний символ "void __cdecl ConfigDialog::Show(struct HWND__ *,class std::vector<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> >,class std::allocator<class std::basic_string<wchar_t,struct std::char_traits<wchar_t>,class std::allocator<wchar_t> > > > const &)" (?Show@ConfigDialog@@YAXPEAUHWND__@@AEBV?$vector@V?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@V?$allocator@V?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@2@@std@@@Z) в функции "public: virtual long __cdecl MainMenuCommand::Invoke(struct IShellItemArray *,struct IBindCtx *)" (?Invoke@MainMenuCommand@@UEAAJPEAUIShellItemArray@@PEAUIBindCtx@@@Z). [B:\ExplorerTags\build\ExplorerTags.vcxproj]
+
+[LNK1120] (MSVC)
+неразрешенных внешних элементов: 1 [B:\ExplorerTags\build\ExplorerTags.vcxproj]

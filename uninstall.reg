@@ -1,0 +1,4 @@
+Windows Registry Editor Version 5.00
+
+[-HKEY_CURRENT_USER\Software\Classes\CLSID\{A1B2C3D4-1111-4444-8888-E5F6A7B8C9D0}]
+[-HKEY_CURRENT_USER\Software\Classes\Directory\shell\ExplorerTagsMenu]

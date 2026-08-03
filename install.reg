@@ -1,0 +1,39 @@
+Windows Registry Editor Version 5.00
+
+; ===================================================================
+; 1. Регистрация КОНТЕКСТНОГО МЕНЮ (IExplorerCommand)
+; ===================================================================
+[HKEY_CLASSES_ROOT\CLSID\{A1B2C3D4-1111-4444-8888-E5F6A7B8C9D0}]
+@="ExplorerTags Main Menu"
+
+[HKEY_CLASSES_ROOT\CLSID\{A1B2C3D4-1111-4444-8888-E5F6A7B8C9D0}\InprocServer32]
+@="B:\\ExplorerTags\\build\\Debug\\ExplorerTags.dll"
+"ThreadingModel"="Apartment"
+
+[HKEY_CLASSES_ROOT\Directory\shell\ExplorerTagsMenu]
+@="Управление проектом"
+"ExplorerCommandHandler"="{A1B2C3D4-1111-4444-8888-E5F6A7B8C9D0}"
+
+
+; ===================================================================
+; 2. Регистрация ОБРАБОТЧИКА СВОЙСТВ (Property Handler IPropertyStore)
+; ===================================================================
+[HKEY_CLASSES_ROOT\CLSID\{A1B2C3D4-2222-4444-8888-E5F6A7B8C9D1}]
+@="ExplorerTags Property Handler"
+
+[HKEY_CLASSES_ROOT\CLSID\{A1B2C3D4-2222-4444-8888-E5F6A7B8C9D1}\InprocServer32]
+@="B:\\ExplorerTags\\build\\Debug\\ExplorerTags.dll"
+"ThreadingModel"="Apartment"
+
+[HKEY_CLASSES_ROOT\Directory\PropertyHandler]
+@="{A1B2C3D4-2222-4444-8888-E5F6A7B8C9D1}"
+
+[HKEY_CLASSES_ROOT\Folder\PropertyHandler]
+@="{A1B2C3D4-2222-4444-8888-E5F6A7B8C9D1}"
+
+
+; ===================================================================
+; 3. СЕКРЕТНЫЙ КЛЮЧ: Привязываем свойство "Тег проекта" к списку колонок Папки!
+; ===================================================================
+[HKEY_CLASSES_ROOT\Directory]
+"FullDetails"="prop:System.ItemNameDisplay;ExplorerTags.ProjectTag;System.ItemDateModified;System.ItemType;System.Size"

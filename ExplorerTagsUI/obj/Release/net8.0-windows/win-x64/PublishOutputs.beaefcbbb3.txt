@@ -1,0 +1,10 @@
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\ExplorerTagsUI.exe
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\ExplorerTagsUI.dll
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\ExplorerTagsUI.deps.json
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\ExplorerTagsUI.runtimeconfig.json
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\ExplorerTagsUI.pdb
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\Microsoft.Data.Sqlite.dll
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\SQLitePCLRaw.batteries_v2.dll
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\SQLitePCLRaw.core.dll
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\SQLitePCLRaw.provider.e_sqlite3.dll
+B:\ExplorerTags\ExplorerTagsUI\bin\Release\net8.0-windows\win-x64\publish\e_sqlite3.dll

@@ -1,0 +1,9 @@
+B:\ExplorerTags\src\DllMain.cpp;B:\ExplorerTags\build\ExplorerTags.dir\Debug\DllMain.obj
+B:\ExplorerTags\src\Global.cpp;B:\ExplorerTags\build\ExplorerTags.dir\Debug\Global.obj
+B:\ExplorerTags\src\ClassFactory.cpp;B:\ExplorerTags\build\ExplorerTags.dir\Debug\ClassFactory.obj
+B:\ExplorerTags\src\MainMenuCommand.cpp;B:\ExplorerTags\build\ExplorerTags.dir\Debug\MainMenuCommand.obj
+B:\ExplorerTags\src\Colorizer.cpp;B:\ExplorerTags\build\ExplorerTags.dir\Debug\Colorizer.obj
+B:\ExplorerTags\src\CommandEnum.cpp;B:\ExplorerTags\build\ExplorerTags.dir\Debug\CommandEnum.obj
+B:\ExplorerTags\src\PropertyHandler.cpp;B:\ExplorerTags\build\ExplorerTags.dir\Debug\PropertyHandler.obj
+B:\ExplorerTags\src\Database.cpp;B:\ExplorerTags\build\ExplorerTags.dir\Debug\Database.obj
+B:\ExplorerTags\src\sqlite3.c;B:\ExplorerTags\build\ExplorerTags.dir\Debug\sqlite3.obj
