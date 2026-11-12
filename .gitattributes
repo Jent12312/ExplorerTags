@@ -4,3 +4,4 @@
 *.iss linguist-vendored
 *.ps1 linguist-vendored
 *.slint linguist-detectable=true
+*.rs linguist-detectable=true
