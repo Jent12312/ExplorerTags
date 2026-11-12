@@ -1,0 +1,20 @@
+# Rust build artifacts
+target/
+
+# Local databases and runtime logs
+*.db
+*.db-wal
+*.db-shm
+*.log
+
+# Installer builds
+InstallerOutput/
+
+# IDE & OS caches
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+Thumbs.db
+Desktop.ini

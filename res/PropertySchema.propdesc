@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/windows/2006/propertydescription">
+  <propertyDescriptionList publisher="ExplorerTags" product="ExplorerTags">
+    
+    <!-- Наше кастомное свойство: Тег проекта -->
+    <propertyDescription name="ExplorerTags.ProjectTag" formatID="{B2D3E4F5-6666-7777-9999-A1B2C3D4E5F6}" propID="100">
+      <description>Пользовательский тег для папки проекта</description>
+      
+      <!-- Разрешаем показывать как колонку и искать по ней -->
+      <searchInfo inInvertedIndex="true" isColumn="true"/>
+      
+      <!-- Тип данных - Строка (String) -->
+      <typeInfo type="String" multipleValues="false" isViewable="true" isQueryable="true"/>
+      
+      <!-- Название колонки, которое увидит пользователь -->
+      <labelInfo label="Тег проекта" />
+      
+      <!-- Настройки отображения и ГРУППИРОВКИ -->
+      <displayInfo displayType="String">
+        <!-- Discrete означает, что каждый уникальный тег - это отдельная группа -->
+        <propListGroupingRange groupingRange="Discrete"/>
+      </displayInfo>
+      
+    </propertyDescription>
+
+  </propertyDescriptionList>
+</schema>

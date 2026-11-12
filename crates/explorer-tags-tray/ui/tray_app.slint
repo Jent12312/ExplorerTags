@@ -1,0 +1,611 @@
+import { ScrollView, LineEdit } from "std-widgets.slint";
+
+export struct FolderEntry {
+    path: string,
+    tag: string,
+    updated_at: string,
+}
+
+// Универсальная кнопка Fluent
+component FluentButton inherits Rectangle {
+    in property <string> text: "Кнопка";
+    in property <bool> primary: false;
+    in property <bool> destructive: false;
+    in property <bool> enabled: true;
+    callback clicked();
+
+    border-radius: 5px;
+    height: 30px;
+    min-width: 72px;
+    border-width: 1px;
+
+    background: !enabled ? #202022 :
+                primary ? (touch.pressed ? #005a9e : (touch.has-hover ? #106ebe : #0078d4)) :
+                destructive ? (touch.pressed ? #4a1c1c : (touch.has-hover ? #361717 : transparent)) :
+                (touch.pressed ? #323236 : (touch.has-hover ? #2e2e33 : #252528));
+
+    border-color: !enabled ? #2a2a2d :
+                  primary ? (touch.pressed ? #004c87 : (touch.has-hover ? #006cc1 : #0078d4)) :
+                  destructive ? (touch.pressed ? #6b2424 : (touch.has-hover ? #541d1d : #401818)) :
+                  (touch.pressed ? #3e3e44 : (touch.has-hover ? #3c3c42 : #323236));
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
+    }
+
+    HorizontalLayout {
+        padding-left: 10px;
+        padding-right: 10px;
+        alignment: center;
+
+        Text {
+            text: root.text;
+            font-size: 12px;
+            font-weight: root.primary ? 600 : 400;
+            color: !root.enabled ? #555558 :
+                   root.primary ? #ffffff :
+                   root.destructive ? #f87171 :
+                   (touch.has-hover ? #ffffff : #d4d4d8);
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// Переключатель (Toggle Switch)
+component ToggleSwitch inherits HorizontalLayout {
+    in property <string> text: "Опция";
+    in-out property <bool> checked: false;
+    callback toggled(bool);
+
+    spacing: 12px;
+    alignment: start;
+
+    switch-box := Rectangle {
+        width: 40px;
+        height: 20px;
+        border-radius: 10px;
+        background: root.checked ? #0078d4 : #323236;
+        border-width: 1px;
+        border-color: root.checked ? #0078d4 : #45454a;
+
+        thumb := Rectangle {
+            x: root.checked ? 22px : 2px;
+            y: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 7px;
+            background: #ffffff;
+            animate x { duration: 150ms; }
+        }
+
+        TouchArea {
+            clicked => {
+                root.checked = !root.checked;
+                root.toggled(root.checked);
+            }
+        }
+    }
+
+    Text {
+        text: root.text;
+        font-size: 13px;
+        color: #e4e4e7;
+        vertical-alignment: center;
+    }
+}
+
+// -------------------------------------------------------------
+// Окно Настроек ExplorerTags
+// -------------------------------------------------------------
+export component SettingsWindow inherits Window {
+    title: "Параметры ExplorerTags";
+    preferred-width: 720px;
+    preferred-height: 520px;
+    min-width: 600px;
+    min-height: 420px;
+    background: #1c1c1e;
+    default-font-family: "Segoe UI Variable, Segoe UI, sans-serif";
+
+    in-out property <int> active-tab: 0; // 0: Реестр папок, 1: Теги, 2: Параметры, 3: Палитра
+    in property <[FolderEntry]> folders-list: [];
+    in property <[string]> tags-list: [];
+    in-out property <bool> autostart-enabled: false;
+    in-out property <bool> quicklook-enabled: true;
+    in-out property <string> new-tag-input: "";
+    in-out property <string> test-color-hex: "3B82F6";
+    in property <image> test-icon-preview;
+
+    callback tab-changed(int);
+    callback open-folder-clicked(string);
+    callback untag-folder-clicked(string);
+    callback add-tag-clicked(string);
+    callback delete-tag-clicked(string);
+    callback autostart-toggled(bool);
+    callback quicklook-toggled(bool);
+    callback clear-icon-cache-clicked();
+    callback generate-test-color(string);
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 14px;
+
+        // Навигационные вкладки
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+
+            for tab[i] in ["📁 Помеченные папки", "🏷️ Теги проекта", "⚙️ Настройки", "🎨 Генератор цветов"] : Rectangle {
+                height: 32px;
+                border-radius: 6px;
+                background: active-tab == i ? #28282c : (touch-tab.has-hover ? #222225 : transparent);
+                border-width: 1px;
+                border-color: active-tab == i ? #3e3e44 : transparent;
+
+                touch-tab := TouchArea {
+                    clicked => {
+                        active-tab = i;
+                        tab-changed(i);
+                    }
+                }
+
+                HorizontalLayout {
+                    padding-left: 12px;
+                    padding-right: 12px;
+                    alignment: center;
+
+                    Text {
+                        text: tab;
+                        font-size: 13px;
+                        font-weight: active-tab == i ? 600 : 400;
+                        color: active-tab == i ? #ffffff : #a1a1aa;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        // Разделитель
+        Rectangle {
+            height: 1px;
+            background: #27272a;
+        }
+
+        // Вкладка 0: Реестр папок
+        if active-tab == 0 : VerticalLayout {
+            spacing: 8px;
+            vertical-stretch: 1;
+
+            HorizontalLayout {
+                alignment: space-between;
+
+                Text {
+                    text: "Все папки с назначенными тегами:";
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #d4d4d8;
+                }
+
+                Text {
+                    text: "Всего: " + folders-list.length;
+                    font-size: 12px;
+                    color: #71717a;
+                }
+            }
+
+            Rectangle {
+                background: #202023;
+                border-radius: 8px;
+                border-width: 1px;
+                border-color: #2e2e33;
+                clip: true;
+
+                ScrollView {
+                    VerticalLayout {
+                        padding: 8px;
+                        spacing: 6px;
+
+                        if folders-list.length == 0 : Text {
+                            text: "Нет помеченных папок. Нажмите правой кнопкой на любую папку в Проводнике -> «Настроить папку...»";
+                            font-size: 13px;
+                            color: #71717a;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                            height: 180px;
+                        }
+
+                        for f in folders-list : Rectangle {
+                            height: 48px;
+                            border-radius: 6px;
+                            background: #26262a;
+                            border-width: 1px;
+                            border-color: #323238;
+
+                            HorizontalLayout {
+                                padding-left: 12px;
+                                padding-right: 12px;
+                                spacing: 10px;
+                                alignment: space-between;
+
+                                VerticalLayout {
+                                    alignment: center;
+                                    spacing: 2px;
+                                    horizontal-stretch: 1;
+
+                                    Text {
+                                        text: f.path;
+                                        font-size: 13px;
+                                        font-weight: 500;
+                                        color: #f4f4f5;
+                                        overflow: elide;
+                                    }
+
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        alignment: start;
+
+                                        Rectangle {
+                                            border-radius: 4px;
+                                            background: transparent;
+                                            border-width: 1px;
+                                            border-color: #0078d488;
+
+                                            HorizontalLayout {
+                                                padding-left: 6px;
+                                                padding-right: 6px;
+                                                padding-top: 1px;
+                                                padding-bottom: 1px;
+
+                                                Text {
+                                                    text: f.tag != "" ? f.tag : "Без тега";
+                                                    font-size: 11px;
+                                                    color: #60a5fa;
+                                                }
+                                            }
+                                        }
+
+                                        Text {
+                                            text: f.updated_at;
+                                            font-size: 11px;
+                                            color: #71717a;
+                                            vertical-alignment: center;
+                                        }
+                                    }
+                                }
+
+                                HorizontalLayout {
+                                    spacing: 6px;
+                                    alignment: end;
+
+                                    FluentButton {
+                                        text: "Открыть";
+                                        clicked => { open-folder-clicked(f.path); }
+                                    }
+
+                                    FluentButton {
+                                        text: "Снять";
+                                        destructive: true;
+                                        clicked => { untag-folder-clicked(f.path); }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Вкладка 1: Теги проекта
+        if active-tab == 1 : VerticalLayout {
+            spacing: 12px;
+            vertical-stretch: 1;
+
+            HorizontalLayout {
+                spacing: 10px;
+                alignment: start;
+
+                LineEdit {
+                    placeholder-text: "Название нового тега...";
+                    text <=> new-tag-input;
+                    width: 260px;
+                    height: 32px;
+                }
+
+                FluentButton {
+                    text: "Добавить тег";
+                    primary: true;
+                    clicked => {
+                        if new-tag-input != "" {
+                            add-tag-clicked(new-tag-input);
+                            new-tag-input = "";
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                background: #202023;
+                border-radius: 8px;
+                border-width: 1px;
+                border-color: #2e2e33;
+                clip: true;
+
+                ScrollView {
+                    VerticalLayout {
+                        padding: 10px;
+                        spacing: 6px;
+
+                        for tag in tags-list : Rectangle {
+                            height: 40px;
+                            border-radius: 6px;
+                            background: #26262a;
+                            border-width: 1px;
+                            border-color: #323238;
+
+                            HorizontalLayout {
+                                padding-left: 12px;
+                                padding-right: 12px;
+                                alignment: space-between;
+
+                                Text {
+                                    text: tag;
+                                    font-size: 13px;
+                                    font-weight: 500;
+                                    color: #f4f4f5;
+                                    vertical-alignment: center;
+                                }
+
+                                FluentButton {
+                                    text: "Удалить";
+                                    destructive: true;
+                                    clicked => { delete-tag-clicked(tag); }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Вкладка 2: Настройки системы
+        if active-tab == 2 : VerticalLayout {
+            spacing: 16px;
+            padding: 10px;
+            vertical-stretch: 1;
+
+            ToggleSwitch {
+                text: "Быстрый предпросмотр файлов по клавише «Пробел» (QuickLook)";
+                checked <=> quicklook-enabled;
+                toggled(val) => { quicklook-toggled(val); }
+            }
+
+            ToggleSwitch {
+                text: "Автозапуск ExplorerTags при входе в Windows";
+                checked <=> autostart-enabled;
+                toggled(val) => { autostart-toggled(val); }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: #27272a;
+            }
+
+            VerticalLayout {
+                spacing: 8px;
+                alignment: start;
+
+                Text {
+                    text: "Кэш сгенерированных иконок:";
+                    font-size: 13px;
+                    color: #d4d4d8;
+                }
+
+                FluentButton {
+                    text: "Очистить кэш кастомных иконок";
+                    clicked => { clear-icon-cache-clicked(); }
+                }
+            }
+        }
+
+        // Вкладка 3: Палитра и генератор цветов
+        if active-tab == 3 : VerticalLayout {
+            spacing: 14px;
+            padding: 10px;
+            vertical-stretch: 1;
+            alignment: center;
+
+            HorizontalLayout {
+                spacing: 20px;
+                alignment: center;
+
+                Rectangle {
+                    width: 72px;
+                    height: 72px;
+                    border-radius: 10px;
+                    background: #242427;
+                    border-width: 1px;
+                    border-color: #343438;
+
+                    Image {
+                        source: test-icon-preview;
+                        width: 56px;
+                        height: 56px;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+
+                VerticalLayout {
+                    spacing: 8px;
+                    alignment: center;
+
+                    HorizontalLayout {
+                        spacing: 8px;
+
+                        Text {
+                            text: "HEX: #";
+                            font-size: 14px;
+                            color: #d4d4d8;
+                            vertical-alignment: center;
+                        }
+
+                        LineEdit {
+                            text <=> test-color-hex;
+                            width: 120px;
+                            height: 32px;
+                        }
+
+                        FluentButton {
+                            text: "Сгенерировать";
+                            primary: true;
+                            clicked => { generate-test-color(test-color-hex); }
+                        }
+                    }
+
+                    Text {
+                        text: "Проверьте качество генерации любого оттенка на эталонной папке Windows 11";
+                        font-size: 12px;
+                        color: #71717a;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// -------------------------------------------------------------
+// Окно Быстрого Предпросмотра (Quick Look)
+// -------------------------------------------------------------
+export component QuickLookWindow inherits Window {
+    title: "QuickLook";
+    no-frame: true;
+    always-on-top: true;
+    preferred-width: 620px;
+    preferred-height: 440px;
+    background: #18181baa;
+    default-font-family: "Segoe UI Variable, Segoe UI, sans-serif";
+
+    in property <string> file-name: "Документ";
+    in property <string> file-size: "";
+    in property <string> file-type: "";
+    in property <image> image-preview;
+    in property <string> text-content: "";
+    in property <bool> is-image: false;
+    in property <bool> is-text: false;
+
+    callback close-clicked();
+
+    Rectangle {
+        border-radius: 10px;
+        border-width: 1px;
+        border-color: #3f3f46aa;
+        background: #18181bdd;
+
+        VerticalLayout {
+            padding: 12px;
+            spacing: 10px;
+
+            // Шапка окна
+            HorizontalLayout {
+                alignment: space-between;
+                height: 28px;
+
+                HorizontalLayout {
+                    spacing: 8px;
+                    alignment: start;
+
+                    Text {
+                        text: file-name;
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #f4f4f5;
+                        overflow: elide;
+                        vertical-alignment: center;
+                    }
+
+                    if file-size != "" : Text {
+                        text: "• " + file-size;
+                        font-size: 12px;
+                        color: #a1a1aa;
+                        vertical-alignment: center;
+                    }
+                }
+
+                FluentButton {
+                    text: "✕";
+                    min-width: 28px;
+                    clicked => { close-clicked(); }
+                }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: #27272a;
+            }
+
+            // Область предпросмотра
+            if is-image : Rectangle {
+                clip: true;
+                vertical-stretch: 1;
+
+                Image {
+                    source: image-preview;
+                    width: parent.width;
+                    height: parent.height;
+                    image-fit: contain;
+                }
+            }
+
+            if is-text : Rectangle {
+                vertical-stretch: 1;
+                background: #121214;
+                border-radius: 6px;
+                border-width: 1px;
+                border-color: #27272a;
+                clip: true;
+
+                ScrollView {
+                    VerticalLayout {
+                        padding: 12px;
+
+                        Text {
+                            text: text-content;
+                            font-family: "Cascadia Code, Consolas, Courier New, monospace";
+                            font-size: 12px;
+                            color: #d4d4d8;
+                            wrap: word-wrap;
+                        }
+                    }
+                }
+            }
+
+            if !is-image && !is-text : VerticalLayout {
+                vertical-stretch: 1;
+                alignment: center;
+                spacing: 8px;
+
+                Text {
+                    text: "📄";
+                    font-size: 48px;
+                    horizontal-alignment: center;
+                }
+
+                Text {
+                    text: file-name;
+                    font-size: 15px;
+                    font-weight: 500;
+                    color: #f4f4f5;
+                    horizontal-alignment: center;
+                }
+
+                Text {
+                    text: file-type + " " + file-size;
+                    font-size: 12px;
+                    color: #71717a;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+    }
+}

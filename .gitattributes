@@ -1,0 +1,6 @@
+# GitHub Linguist language detection
+*.ico linguist-vendored
+*.propdesc linguist-vendored
+*.iss linguist-vendored
+*.ps1 linguist-vendored
+*.slint linguist-detectable=true

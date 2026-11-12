@@ -1,0 +1,19 @@
+[package]
+name = "explorer-tags-ui"
+version = "2.0.0"
+edition = "2021"
+
+[[bin]]
+name = "ExplorerTagsUI"
+path = "src/main.rs"
+
+[dependencies]
+explorer-tags-core = { path = "../explorer-tags-core" }
+slint = { version = "1.18", features = ["compat-1-2"] }
+rfd = "0.15"
+image = { version = "0.25", default-features = false, features = ["ico", "png"] }
+windows = { version = "0.58", features = ["Win32_Foundation"] }
+
+[build-dependencies]
+slint-build = "1.18"
+winres = "0.1"
